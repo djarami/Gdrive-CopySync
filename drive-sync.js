@@ -252,16 +252,18 @@ async function syncFolder(drive, localFolderPath, targetFolderId, basePath = '',
     if (filesToSync.length > 0) {
       console.log(`\nUploading ${filesToSync.length} files`);
       
-      // Create progress bar
+      // Create progress bar with clearer format
       const progressBar = new cliProgress.SingleBar({
-        format: 'Progress |{bar}| {percentage}% | {value}/{total} Files | {file}',
+        format: 'Progress |{bar}| {percentage}% | {value}/{total} Files | {currentFile}',
         barCompleteChar: '\u2588',
         barIncompleteChar: '\u2591',
       });
-      progressBar.start(filesToSync.length, 0, { file: '' });
+      progressBar.start(filesToSync.length, 0, { 
+        currentFile: 'Starting...'
+      });
 
       // Create worker pool
-      const maxWorkers = Math.min(os.cpus().length - 1, 4); // Use up to 4 workers or CPU count - 1
+      const maxWorkers = Math.min(os.cpus().length - 1, 4);
       const workers = Array(maxWorkers).fill(null).map(() => new Worker('./worker.js'));
       let workerIndex = 0;
       let completedFiles = 0;
@@ -273,7 +275,7 @@ async function syncFolder(drive, localFolderPath, targetFolderId, basePath = '',
           workerIndex = (workerIndex + 1) % workers.length;
 
           worker.on('error', (error) => {
-            console.error(`Worker error for ${file.path}:`, error);
+            console.error(`\nWorker error for ${file.path}:`, error);
             reject(error);
           });
 
@@ -297,13 +299,22 @@ async function syncFolder(drive, localFolderPath, targetFolderId, basePath = '',
 
           worker.once('message', result => {
             completedFiles++;
-            progressBar.update(completedFiles, { 
-              file: result.success ? `Copied: ${file.path}` : `Failed: ${file.path}`
-            });
+            
+            // Update progress bar with current status
+            if (result.success) {
+              progressBar.update(completedFiles, { 
+                currentFile: `Copied: ${file.path}`
+              });
+            } else {
+              progressBar.update(completedFiles, { 
+                currentFile: `Failed: ${file.path}`
+              });
+              console.error(`\nError uploading ${file.path}:`, result.error);
+            }
+
             if (result.success) {
               resolve();
             } else {
-              console.error(`\nError uploading ${file.path}:`, result.error);
               reject(new Error(result.error));
             }
           });
