@@ -1,4 +1,68 @@
 {
     "localFolderPath": "/path/to/your/local/folder",
-    "targetFolderId": "your_google_drive_folder_id"
+    "targetFolderId": "your_google_drive_folder_id",
+    "skipPatterns": [
+        // Development
+        "node_modules",
+        "bower_components",
+        ".git",
+        ".svn",
+        ".hg",
+        ".next",
+        "dist",
+        "build",
+        "coverage",
+
+        // IDE and Editor files
+        ".idea",
+        ".vscode",
+        ".vs",
+        "*.sublime-*",
+        ".eclipse",
+        ".settings",
+
+        // System files
+        ".DS_Store",
+        "Thumbs.db",
+        "desktop.ini",
+        "*.lnk",
+
+        // Temporary and cache files
+        "tmp/*",
+        "temp/*",
+        "cache/*",
+        "*.tmp",
+        "*.temp",
+        "*.cache",
+        "*.swp",
+        "*.swo",
+
+        // Log files
+        "*.log",
+        "logs/*",
+        "npm-debug.log*",
+        "yarn-debug.log*",
+        "yarn-error.log*",
+
+        // Environment and secret files
+        ".env*",
+        ".env.local",
+        ".env.*.local",
+        "*.pem",
+        "*.key",
+        "*.cert",
+        "*.crt",
+
+        // Package manager files
+        "package-lock.json",
+        "yarn.lock",
+        "pnpm-lock.yaml",
+
+        // Compiled files
+        "*.pyc",
+        "__pycache__",
+        "*.class",
+        "*.o",
+        "*.obj"
+    ]
 } 
